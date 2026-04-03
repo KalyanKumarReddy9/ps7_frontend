@@ -47,10 +47,10 @@ export default function AnalyticsView({ isDark }: { isDark: boolean }) {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2 }}
-          className="glass-card rounded-2xl p-6"
+          className="glass-card rounded-2xl p-6 min-w-0"
         >
           <h3 className="text-lg font-heading font-semibold mb-6">Accuracy vs Epochs</h3>
-          <div className="h-64">
+          <div className="w-full h-64 min-h-[256px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={epochData}>
                 <defs>
@@ -76,10 +76,10 @@ export default function AnalyticsView({ isDark }: { isDark: boolean }) {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3 }}
-          className="glass-card rounded-2xl p-6"
+          className="glass-card rounded-2xl p-6 min-w-0"
         >
           <h3 className="text-lg font-heading font-semibold mb-6">Loss vs Epochs</h3>
-          <div className="h-64">
+          <div className="w-full h-64 min-h-[256px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={epochData}>
                 <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />

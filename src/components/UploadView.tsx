@@ -46,6 +46,7 @@ export default function UploadView() {
 
       const response = await fetch(`${API_BASE_URL}/predict`, {
         method: "POST",
+        mode: "cors",
         body: formData,
       });
 
@@ -53,7 +54,9 @@ export default function UploadView() {
         let backendMessage = "Prediction failed";
         try {
           const errorData = await response.json();
-          if (errorData?.error) {
+          if (errorData?.error && errorData?.details) {
+            backendMessage = `${errorData.error}: ${errorData.details}`;
+          } else if (errorData?.error) {
             backendMessage = errorData.error;
           }
         } catch {
@@ -95,8 +98,17 @@ export default function UploadView() {
       }
     } catch (error) {
       console.error("Error during prediction:", error);
-      const message =
+      let message =
         error instanceof Error ? error.message : "Unexpected prediction error";
+
+      if (
+        error instanceof TypeError &&
+        error.message.toLowerCase().includes("failed to fetch")
+      ) {
+        message =
+          "Unable to reach backend API. Verify VITE_API_BASE_URL, backend deployment status, and CORS_ORIGINS on backend.";
+      }
+
       alert(`Prediction failed: ${message}`);
     } finally {
       setIsPredicting(false);
