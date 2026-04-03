@@ -50,8 +50,8 @@ export default function AnalyticsView({ isDark }: { isDark: boolean }) {
           className="glass-card rounded-2xl p-6 min-w-0"
         >
           <h3 className="text-lg font-heading font-semibold mb-6">Accuracy vs Epochs</h3>
-          <div className="w-full h-64 min-h-[256px]">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="w-full h-64" style={{ minHeight: '256px', minWidth: '300px' }}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={300} minHeight={256}>
               <AreaChart data={epochData}>
                 <defs>
                   <linearGradient id="colorAcc" x1="0" y1="0" x2="0" y2="1">
@@ -66,7 +66,7 @@ export default function AnalyticsView({ isDark }: { isDark: boolean }) {
                   contentStyle={{ backgroundColor: isDark ? '#1A1F2E' : '#fff', borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                   itemStyle={{ color: chartColor }}
                 />
-                <Area type="monotone" dataKey="accuracy" stroke={chartColor} strokeWidth={3} fillOpacity={1} fill="url(#colorAcc)" />
+                <Area type="monotone" dataKey="accuracy" stroke={chartColor} strokeWidth={3} dot={false} fillOpacity={1} fill="url(#colorAcc)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -79,12 +79,12 @@ export default function AnalyticsView({ isDark }: { isDark: boolean }) {
           className="glass-card rounded-2xl p-6 min-w-0"
         >
           <h3 className="text-lg font-heading font-semibold mb-6">Loss vs Epochs</h3>
-          <div className="w-full h-64 min-h-[256px]">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="w-full h-64" style={{ minHeight: '256px', minWidth: '300px' }}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={300} minHeight={256}>
               <LineChart data={epochData}>
                 <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
                 <XAxis dataKey="epoch" stroke={textColor} fontSize={12} tickLine={false} />
-                <YAxis stroke={textColor} fontSize={12} tickLine={false} />
+                <YAxis stroke={textColor} fontSize={12} tickLine={false} domain={['auto', 'auto']} />
                 <Tooltip 
                   contentStyle={{ backgroundColor: isDark ? '#1A1F2E' : '#fff', borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                   itemStyle={{ color: chartColor2 }}
