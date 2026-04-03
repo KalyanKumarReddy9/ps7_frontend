@@ -9,6 +9,7 @@
   NODE_VERSION = "18"
   CI = "true"       # Ensure we're in CI mode
   NETLIFY_BUILD_SKIP = "false"  # Never skip build
+  VITE_API_BASE_URL = "https://ps7-backend-fhze.onrender.com"
 
 [build.processing]
   skip_processing = false  # Ensure processing is not skipped
