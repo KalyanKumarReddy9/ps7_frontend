@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { motion, AnimatePresence } from "framer-motion";
+import { Client, handle_file } from "@gradio/client";
 import {
   UploadCloud,
   Image as ImageIcon,
@@ -10,9 +11,7 @@ import {
   Activity,
 } from "lucide-react";
 
-const API_BASE_URL = (
-  import.meta.env.VITE_API_BASE_URL || "https://ps7-backend-fhze.onrender.com"
-).replace(/\/$/, "");
+const HF_SPACE_ID = import.meta.env.VITE_HF_SPACE_ID || "kalyan9/ps7_backend";
 
 export default function UploadView() {
   const [file, setFile] = useState<File | null>(null);
@@ -41,48 +40,22 @@ export default function UploadView() {
     setIsPredicting(true);
 
     try {
-      const formData = new FormData();
-      formData.append("image", file);
-
-      const response = await fetch(`${API_BASE_URL}/predict`, {
-        method: "POST",
-        mode: "cors",
-        body: formData,
+      const app = await Client.connect(HF_SPACE_ID);
+      const gradioResult = await app.predict("/predict", {
+        image: handle_file(file),
       });
 
-      if (!response.ok) {
-        let backendMessage = "Prediction failed";
-        try {
-          const errorData = await response.json();
-          if (errorData?.error && errorData?.details) {
-            backendMessage = `${errorData.error}: ${errorData.details}`;
-          } else if (errorData?.error) {
-            backendMessage = errorData.error;
-          }
-        } catch {
-          // Keep default message when response body is not JSON.
-        }
-        throw new Error(backendMessage);
-      }
+      const [prediction, confidenceValue] = (gradioResult.data || []) as [
+        string | undefined,
+        number | undefined,
+        Record<string, unknown> | undefined,
+      ];
 
-      const data = await response.json();
-
-      let label = "Unknown";
-      let confidence = 0;
-
-      if (data.is_ai !== undefined) {
-        label = data.is_ai ? "AI Generated" : "Real Image";
-        confidence = data.confidence
-          ? parseFloat((data.confidence * 100).toFixed(1))
+      const label = prediction || "Unknown";
+      const confidence =
+        typeof confidenceValue === "number"
+          ? parseFloat(confidenceValue.toFixed(2))
           : 0;
-      } else if (data.class !== undefined) {
-        // If it's a categorical output (e.g. 0=AI, 1=Real)
-        // You might need to adjust this based on the actual model
-        label = data.class === 0 ? "AI Generated" : "Real Image";
-        confidence = data.confidence
-          ? parseFloat((data.confidence * 100).toFixed(1))
-          : 0;
-      }
 
       const resultObj = {
         label: label,
@@ -106,7 +79,7 @@ export default function UploadView() {
         error.message.toLowerCase().includes("failed to fetch")
       ) {
         message =
-          "Unable to reach backend API. Verify VITE_API_BASE_URL, backend deployment status, and CORS_ORIGINS on backend.";
+          "Unable to reach Hugging Face backend. Verify VITE_HF_SPACE_ID and Space deployment status.";
       }
 
       alert(`Prediction failed: ${message}`);
